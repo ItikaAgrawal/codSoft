@@ -1,93 +1,144 @@
-
-#include<bits/stdc++.h>
-#include<iostream>
-#include<string>
-#include<map>
-// #include<algorithm>
+#include <iostream>
+#include <bits/stdc++.h>
+#include <vector>
+#include <string>
 
 using namespace std;
 
-int main()
+struct Task 
 {
-    int key = 1, choice, question, delete_key, edit_key;
-    string val, error;
-    map<int, string> myTask;
-    map<int, int> mymap;
-    start:
-    cout<<"\n------------------------- TO-DO LIST -------------------------"<<endl;
-    cout<<"What you want to do? --->\n"<<endl;
-    cout<<"1.>>> Add Task >>>"<<endl;
-    cout<<"2.>>> View Task >>>"<<endl;
-    cout<<"3.>>> Remove Task >>>"<<endl;
-    cout<<"4.>>> Mark Task as Completed >>>"<<endl;
-    cout<<"5.>>> Exit >>>"<<endl;
-    cout<<"\nSelect your choice : ";
-    cin>>choice;
-    switch(choice)
+    string description;
+    bool completion_status;
+};
+
+void add_task(vector<Task>& tasks, const string& description); 
+void view_tasks(const vector<Task>& tasks);
+void mark_task_completed(vector<Task>& tasks, int taskIndex); 
+void remove_task(vector<Task>& tasks, int taskIndex); 
+
+int main() 
+{
+    vector<Task> tasks;
+    string description; 
+  
+    while(true) 
     {
-        case 1:
-            cout<<endl;
-            do{
-                cin.ignore();
-                cout<<"Enter Your Task Details : ";
-                getline(cin, val);
-                myTask.insert({key, val});
-                mymap.insert({key, 0});
-                key++;
-                cout<<"Do you want to add more Task? (1=Yes / 0=No) : ";
-                cin>>question;
-            }while(question);
-            goto start;
+        cout << "------------ To-Do List Manager ------------" << endl;
+        cout << "1) Add Task" << endl;
+        cout << "2) View Tasks" << endl;
+        cout << "3) Mark Task as Completed" << endl;
+        cout << "4) Remove Task" << endl;
+        cout << "5) Quit" << endl;
+        cout << "Enter your choice: ";
+
+        int choice;
+        cin >> choice;
+
+        if(choice == 5) 
+        {
+            cout << "Adios Amigos!" << endl;
             break;
-        case 2:
-            cout<<endl;
-            for (auto x : myTask) 
-            {
-                if(mymap.at(x.first) == 1)
-                {
-                    cout << "Task-" << x.first << " : " << x.second << endl; 
-                }
-                else if(mymap.at(x.first) == 0)
-                {
-                    cout << "Task-" << x.first << " : " << x.second << " ---> [Pending]" << endl;
-                }
-            }
-            goto start;
-            break;
-        case 3:
-            cout<<"\nEnter the task number which one you want to remove/delete : ";
-            cin>>delete_key;
-            myTask.erase(delete_key);
-            mymap.erase(delete_key);
-            cout<<"\nTask-"<<delete_key<<" deleted/removed successfully...!"<<endl;
-            goto start;
-            break;
-        case 4:
-            cout<<"\nEnter the task number which one you want to mark as completed : ";
-            cin>>edit_key;
-            try
-            {
-                myTask[edit_key] = myTask.at(edit_key) + " ---> [Completed]";
-                mymap[edit_key] = 1;
-                cout<<"\nTask-"<<edit_key<<" marked as completed successfully...!"<<endl;
-            }
-            catch(const out_of_range &e) 
-            {  
-                cout<<endl<<"Invalid Task Number...!"<<endl;  
-            } 
-            goto start;
-            break;
-        case 5:
-            cout<<"\nThank you for using My To-Do List Application...!"<<endl;
-            exit(0);
-            break;
-        default:
-            cout<<"Invalid choice...! Please try again..."<<endl;
-            goto start;
-            break;
+        }
+
+        switch(choice) 
+        {
+            case 1:
+                cout << "Enter task description: ";
+                cin.ignore(); 
+                getline(cin, description);
+                add_task(tasks, description);
+                break;
+          
+            case 2:
+                view_tasks(tasks);
+                break;
+          
+            case 3:
+                view_tasks(tasks);
+                cout << "Enter the task index to mark as completed: ";
+                int markIndex;
+                cin >> markIndex;
+                mark_task_completed(tasks, markIndex);
+                break;
+          
+            case 4:
+                view_tasks(tasks);
+                cout << "Enter the task index to remove: ";
+                int removeIndex;
+                cin >> removeIndex;
+                remove_task(tasks, removeIndex);
+                break;
+          
+            default:
+                cout << "Invalid choice! Please enter an index from given choices!" << endl;
+        }
     }
-    
-    
 
     return 0;
+}
+
+void add_task(vector<Task>& tasks, const string& description) 
+{
+    Task newTask;
+    newTask.description = description;
+    newTask.completion_status = false;
+    tasks.push_back(newTask);
+    cout << "Task added successfully!" << endl;
+}
+
+void view_tasks(const vector<Task>& tasks)
+{
+    if (tasks.empty()) 
+    {
+        cout << "No tasks in the list" << endl;
+    } 
+    
+    else 
+    {
+        cout << "Tasks:" << endl;
+        for (size_t i = 0; i < tasks.size(); i++) 
+        {
+            cout << i + 1 << ". ";
+            
+            if (tasks[i].completion_status) 
+            {
+                cout << "[X] ";
+            } 
+            
+            else 
+            {
+                cout << "[ ] ";
+            }
+            
+            cout << tasks[i].description << endl;
+        }
+    }
+}
+
+void mark_task_completed(vector<Task>& tasks, int task_index) 
+{
+    if(task_index >= 1 && task_index <= static_cast<int>(tasks.size())) 
+    {
+        tasks[task_index - 1].completion_status = true;
+        cout << "Task marked as completed!" << endl;
+    } 
+    
+    else 
+    {
+        cout << "Invalid task index" << endl;
+    }
+}
+
+void remove_task(vector<Task>& tasks, int task_index) 
+{
+    if(task_index >= 1 && task_index <= static_cast<int>(tasks.size())) 
+    {
+        tasks.erase(tasks.begin() + task_index - 1);
+        cout << "Task removed successfully!" << endl;
+    } 
+    
+    else 
+    {
+        cout << "Invalid task index" << endl;
+    }
 }
